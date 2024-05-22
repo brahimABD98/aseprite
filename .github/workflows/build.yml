@@ -1,4 +1,6 @@
 name: build
+env:
+  BUILD_TYPE: Release
 on: [push, pull_request]
 jobs:
   build:
@@ -38,13 +40,13 @@ jobs:
           echo '# This file is here so Aseprite behaves as a portable program' > build\bin\aseprite.ini
       - name: Create release
         run: |
-          7z -tzip a build\bin\Aseprite-${{ needs.check-version.outputs.latest_tag }}-windows.zip build\bin\*
+          7z -tzip a build\bin\Aseprite-${{ steps.version_info.outputs.latest_tag }}-windows.zip build\bin\*
       - name: Upload release
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ needs.check-version.outputs.upload_url }}
-          asset_path: build\bin\Aseprite-${{ needs.check-version.outputs.latest_tag }}-windows.zip
-          asset_name: Aseprite-${{ needs.check-version.outputs.latest_tag }}-windows.zip
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: build\bin\Aseprite-${{ steps.version_info.outputs.latest_tag }}-windows.zip
+          asset_name: Aseprite-${{ steps.version_info.outputs.latest_tag }}-windows.zip
           asset_content_type: application/zip
