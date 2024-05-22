@@ -9,39 +9,42 @@ jobs:
         build_type: [RelWithDebInfo, Debug]
         enable_ui: [off]
     steps:
-    - uses: actions/checkout@v4
-      with:
-        submodules: 'recursive'
-    - name: Install Dependencies
-      run: |
-        echo "No additional dependencies required for Windows"
-    - uses: aseprite/get-ninja@main
-    - uses: ilammy/msvc-dev-cmd@v1
-    - name: Workaround for windows-2022 and cmake 3.25.0
-      run: rm -rf C:\Strawberry
-    - name: Generating Makefiles
-      run: |
-        set enable_ccache=off
-        cmake -S . -B build -G Ninja ^
-          -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} ^
-          -DENABLE_TESTS=OFF ^
-          -DENABLE_UI=${{ matrix.enable_ui }} ^
-          -DENABLE_CCACHE=%enable_ccache%
-    - name: Compiling
-      run: |
-        cd build && ninja
-    - name: Make portable zip
-      run: |
-        echo '# This file is here so Aseprite behaves as a portable program' > build\bin\aseprite.ini
-    - name: Create release
-      run: |
-        7z -tzip a build\bin\Aseprite-${{ needs.check-version.outputs.latest_tag }}-windows.zip build\bin\*
-    - name: Upload release
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ needs.check-version.outputs.upload_url }}
-        asset_path: build\bin\Aseprite-${{ needs.check-version.outputs.latest_tag }}-windows.zip
-        asset_name: Aseprite-${{ needs.check-version.outputs.latest_tag }}-windows.zip
-        asset_content_type: application/zip
+      - uses: actions/checkout@v4
+        with:
+          submodules: "recursive"
+      - name: Install Dependencies
+        run: |
+          echo "No additional dependencies required for Windows"
+      - uses: aseprite/get-ninja@main
+      - uses: ilammy/msvc-dev-cmd@v1
+      - name: Workaround for windows-2022 and cmake 3.25.0
+        shell: bash
+        run: rm -rf C:\Strawberry
+      - name: Generating Makefiles
+        shell: bash
+        run: |
+          set enable_ccache=off
+          cmake -S . -B build -G Ninja ^
+            -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} ^
+            -DENABLE_TESTS=OFF ^
+            -DENABLE_UI=${{ matrix.enable_ui }} ^
+            -DENABLE_CCACHE=%enable_ccache%
+      - name: Compiling
+        shell: bash
+        run: |
+          cd build && ninja
+      - name: Make portable zip
+        run: |
+          echo '# This file is here so Aseprite behaves as a portable program' > build\bin\aseprite.ini
+      - name: Create release
+        run: |
+          7z -tzip a build\bin\Aseprite-${{ needs.check-version.outputs.latest_tag }}-windows.zip build\bin\*
+      - name: Upload release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.check-version.outputs.upload_url }}
+          asset_path: build\bin\Aseprite-${{ needs.check-version.outputs.latest_tag }}-windows.zip
+          asset_name: Aseprite-${{ needs.check-version.outputs.latest_tag }}-windows.zip
+          asset_content_type: application/zip
