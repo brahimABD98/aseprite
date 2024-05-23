@@ -40,7 +40,7 @@ jobs:
           echo '# This file is here so Aseprite behaves as a portable program' > build\bin\aseprite.ini
       - name: Create release
         run: |
-          7z -tzip a build\bin\Aseprite-${{ steps.version_info.outputs.latest_tag }}-windows.zip build\bin\*
+          7z -tzip a build\Aseprite-${{ steps.version_info.outputs.latest_tag }}-windows.zip build\*
 
       - name: Create Release
         id: create_release
