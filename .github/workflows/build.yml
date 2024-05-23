@@ -8,7 +8,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        build_type: [RelWithDebInfo, Debug]
+        build_type: [RelWithDebInfo]
         enable_ui: [off]
     steps:
       - uses: actions/checkout@v4
